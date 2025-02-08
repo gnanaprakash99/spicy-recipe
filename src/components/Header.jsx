@@ -31,7 +31,7 @@ const Header = () => {
 
     return (
         <div>
-            <nav className="navbar navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark">
+            <nav className="navbar navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark" >
                 <div className="container-fluid">
                     <div className="collapse navbar-collapse" id="navbarColor01">
                         <a className="navbar-brand" href="#">Recipe App</a>
