@@ -25,7 +25,7 @@ const RecipeDetails = () => {
 
     const handleAddToFavorites = () => {
         const isAlreadyFavorite = favorites.some((fav) => fav.idMeal === recipe.idMeal);
-    
+
         if (isAlreadyFavorite) {
             toast.error('This recipe is already added to favorites.');
         } else {
@@ -33,7 +33,7 @@ const RecipeDetails = () => {
             toast.success('Recipe added to favorites!');
         }
     };
-    
+
 
     const handleClose = () => {
         navigate(-1);

@@ -2,19 +2,14 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filterRecipes } from '../redux/slices/RecipeSlice';
 import Favorite from './Favorite';
-import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
     const dispatch = useDispatch();
     const [isFavorite, setIsFavorite] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const navigate = useNavigate();
 
     const filteredRecipes = useSelector((state) => state.recipes.filteredRecipes);
 
-    const handleHomeClick = () => {
-        navigate('/');
-    };
 
     const handleFilter = (mealType, dietType) => {
         dispatch(filterRecipes({ mealType, dietType, query: searchQuery }));
@@ -28,6 +23,10 @@ const Header = () => {
         e.preventDefault();
         dispatch(filterRecipes({ query: searchQuery, mealType: null, dietType: null }));
         setSearchQuery('');
+    };
+
+    const handleHomeClick = () => {
+        dispatch(filterRecipes({ query: searchQuery, mealType: null, dietType: null }));
     };
 
     return (
