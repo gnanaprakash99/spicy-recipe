@@ -1,4 +1,4 @@
-# Recipe App
+# Spicy recipe
 
 A React application that allows users to browse, filter, and manage their favorite recipes. The app fetches data from API and provides features such as filtering by meal type and diet, viewing detailed recipes, adding/removing favorites, and searching for recipes.
 
