@@ -4,7 +4,7 @@ A React application that allows users to browse, filter, and manage their favori
 
 ## Live Demo
 
-You can view the live application here: [Netlify Live Demo](https://recipe-app-2529.netlify.app/)
+You can view the live application here: [Netlify Live Demo](https://spicyrecipe-9191.netlify.app/)
 
 ## Features
 
