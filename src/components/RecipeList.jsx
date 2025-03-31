@@ -1,28 +1,28 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchRecipes } from '../redux/slices/RecipeSlice';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import useRecipeItems from "../redux/hooks/useRecipe";
 
 const RecipeList = () => {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { filteredRecipes, status } = useSelector((state) => state.recipes);
+    const { isLoading, error } = useRecipeItems();
+    const recipeItems = useSelector((state) => state.recipes.filteredItems);
+    const noResults = useSelector((state) => state.recipes.noResults);
 
     useEffect(() => {
-        dispatch(fetchRecipes({ query: '' }));
-    }, [dispatch]);
+    }, [recipeItems]);
 
-    if (status === 'loading') return <p>Loading...</p>;
-    if (status === 'failed') return <p>Error fetching recipes.</p>;
+    if (isLoading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error.message}</p>;
 
     return (
         <div className="container mt-4">
-            {filteredRecipes.length === 0 ? (
+            {noResults ? (
                 <p className="text-center">No recipes found.</p>
             ) : (
                 <div className="row">
-                    {filteredRecipes.map((recipe) => (
-                        <div className="col-md-4 mb-3" key={recipe.idMeal}>
+                    {recipeItems.map((recipe) => (
+                        <div className="col-md-4 mb-4" key={recipe.idMeal}>
                             <div className="card">
                                 <img
                                     src={recipe.strMealThumb}

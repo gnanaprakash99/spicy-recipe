@@ -1,62 +1,45 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice } from '@reduxjs/toolkit';
 
-const API_URL = 'https://api.edamam.com/search';
-const APP_ID = 'a5de3521';
-const APP_KEY = '28f8a20bd89362740e68d4bbb349b977';
-
-export const fetchRecipes = createAsyncThunk(
-    'recipes/fetchRecipes',
-    async ({ query }) => {
-        const response = await axios.get(API_URL, {
-            params: {
-                q: query,
-                app_id: APP_ID,
-                app_key: APP_KEY,
-                from: 0,
-                to: 50,
-            },
-        });
-        console.log('data',response.data)
-        return response.data.hits.map(hit => hit.recipe); 
-    }
-);
+const initialState = {
+    items: [],
+    filteredItems: [],
+    mealType: null,
+    dietType: null,
+    noResults: false // ✅ Add this line
+};
 
 const recipeSlice = createSlice({
     name: 'recipes',
-    initialState: {
-        recipes: [],
-        filteredRecipes: [],
-        status: 'idle',
-        error: null,
-    },
+    initialState,
     reducers: {
-        filterRecipes: (state, action) => {
-            const { query, mealType, dietType } = action.payload;
-            state.filteredRecipes = state.recipes.filter((recipe) => {
-                const matchesQuery = query ? recipe.label.toLowerCase().includes(query.toLowerCase()) : true;
-                const matchesMealType = mealType ? recipe.mealType === mealType : true;
-                const matchesDietType = dietType ? recipe.healthLabels.includes(dietType) || recipe.dietLabels.includes(dietType) : true;
-                return matchesQuery && matchesMealType && matchesDietType;
-            });
+        setRecipeItems: (state, action) => {
+            state.items = action.payload;
+            state.filteredItems = action.payload; // Default to all items
         },
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchRecipes.pending, (state) => {
-                state.status = 'loading';
-            })
-            .addCase(fetchRecipes.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.recipes = action.payload;
-                state.filteredRecipes = action.payload;
-            })
-            .addCase(fetchRecipes.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.error.message;
+        filterRecipes: (state, action) => {
+            const { mealType, dietType, query } = action.payload;
+
+            state.mealType = mealType !== null ? mealType : state.mealType;
+            state.dietType = dietType !== null ? dietType : state.dietType;
+
+            state.filteredItems = state.items.filter((recipe) => {
+                const mealMatch = !state.mealType || recipe.mealType === state.mealType;
+                const dietMatch = !state.dietType || recipe.dietType === state.dietType;
+                const queryMatch = !query || recipe.strMeal.toLowerCase().includes(query.toLowerCase());
+
+                return mealMatch && dietMatch && queryMatch;
             });
-    },
+            state.noResults = state.filteredItems.length === 0;
+        },
+        resetFilters: (state) => {
+            state.mealType = null;
+            state.dietType = null;
+            state.filteredItems = [...state.items]; // ✅ Ensure all items are restored
+            state.noResults = false;
+        },
+        
+    }
 });
 
-export const { filterRecipes } = recipeSlice.actions;
+export const { setRecipeItems, filterRecipes, resetFilters } = recipeSlice.actions;
 export default recipeSlice.reducer;
