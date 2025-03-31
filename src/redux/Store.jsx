@@ -4,7 +4,7 @@ import favoritesReducer from './slices/FavoriteSlice';
 
 const store = configureStore({
     reducer: {
-        recipes: recipeReducer,
+        recipes:recipeReducer,
         favorites: favoritesReducer,
     },
 });

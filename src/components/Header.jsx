@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { filterRecipes } from '../redux/slices/RecipeSlice';
 import Favorite from './Favorite';
+import { useNavigate } from 'react-router-dom';
+import useRecipeItems from '../redux/hooks/useRecipe';
+import { setRecipeItems, resetFilters } from '../redux/slices/RecipeSlice';
 
 const Header = () => {
     const dispatch = useDispatch();
     const [isFavorite, setIsFavorite] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
+    const { refetch } = useRecipeItems()
 
     const handleMealTypeFilter = (mealType) => {
         dispatch(filterRecipes({ mealType, dietType: null, query: searchQuery }));
@@ -23,12 +28,24 @@ const Header = () => {
     const handleSearch = (e) => {
         e.preventDefault();
         dispatch(filterRecipes({ query: searchQuery, mealType: null, dietType: null }));
-        searchQuery('');
+        setSearchQuery('');
     };
 
-    const handleHomeClick = () => {
-        dispatch(filterRecipes({ query: '', mealType: null, dietType: null }));
+    const handleHomeClick = async () => {
+        dispatch(resetFilters()); // ✅ Reset filters
+
+        try {
+            const { data } = await refetch(); // ✅ Fetch fresh data
+            if (data) {
+                dispatch(setRecipeItems(data)); // ✅ Restore all recipes
+            }
+        } catch (error) {
+            console.error("Error fetching recipes:", error);
+        }
+
+        navigate('/'); // ✅ Ensure Home reloads
     };
+    
 
     return (
         <div>
@@ -60,9 +77,8 @@ const Header = () => {
                                     Diet Type
                                 </a>
                                 <ul className="dropdown-menu">
-                                    <li><a className="dropdown-item" href="#" onClick={() => handleDietTypeFilter('Vegetarian')}>Vegetarian</a></li>
-                                    <li><a className="dropdown-item" href="#" onClick={() => handleDietTypeFilter('Vegan')}>Vegan</a></li>
-                                    <li><a className="dropdown-item" href="#" onClick={() => handleDietTypeFilter('Gluten-Free')}>Gluten-Free</a></li>
+                                    <li><a className="dropdown-item" href="#" onClick={() => handleDietTypeFilter('Vegetarian')}>Veg</a></li>
+                                    <li><a className="dropdown-item" href="#" onClick={() => handleDietTypeFilter('Non-Vegetarian')}>Non-Veg</a></li>
                                 </ul>
                             </li>
                         </ul>
